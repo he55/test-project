@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 void FileReverse(PCTSTR pszPathName);
-void todo(PVOID pv) {
+void todo(void * pv) {
 	char* str = (char*)pv;
 	return;
 }
@@ -36,7 +36,7 @@ void FileReverse(PCTSTR pszPathName)
 		return;
 	}
 
-	PVOID pvFile = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
+	LPVOID pvFile = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
 	if (pvFile) {
 		todo(pvFile);
 		UnmapViewOfFile(pvFile);
