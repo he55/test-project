@@ -13,9 +13,14 @@ void todo(void * pv) {
 
 int main()
 {
-	FileReverse(L"C:\\Users\\qwe\\Downloads\\123.txt");
+	FileReverse(L"C:\\Users\\qwe\\Downloads\\ARC.app\\cookeddata\\arc\\content\\paks\\arc-ios.pak");
+
+	//FileReverse(L"C:\\Users\\qwe\\Downloads\\123.txt");
 }
 
+
+// Creating a File Mapping Using Large Pages
+// https://docs.microsoft.com/en-us/windows/win32/memory/creating-a-file-mapping-using-large-pages
 void FileReverse(PCTSTR pszPathName)
 {
 	HANDLE hFile = CreateFile(pszPathName, GENERIC_WRITE | GENERIC_READ, 0, NULL
