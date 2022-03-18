@@ -1,5 +1,4 @@
 
-
 struct RKRS_H
 {
 	/// <summary>
@@ -92,10 +91,22 @@ struct HEADER_H
 	char txt[4];
 };
 
+
+#include <stdlib.h>
+#include <vector>
+
 void parse_data(void* pv) {
 	HEADER_H* h = (HEADER_H*)pv;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
 	BID_H* bid = (BID_H*)((char*)pv + rkrs->offset);
-	BIDD_H* bidd = (BIDD_H*)((char*)pv +bid->offset);
+	BIDD_H** ppbidd = (BIDD_H**)malloc(sizeof(void*) * rkrs->count);
+	for (size_t i = 0; i < rkrs->count; i++)
+	{
+		ppbidd[i] = (BIDD_H*)((char*)pv + bid[i].offset);
+	}
+
+	std::vector<BID_H> vecBid(bid, bid + rkrs->count);
+	std::vector<BIDD_H*> vecPbidd(ppbidd, ppbidd + rkrs->count);
+
 	return;
 }
