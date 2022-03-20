@@ -1,45 +1,25 @@
 
 struct RKRS_H
 {
-	/// <summary>
-	/// BID 偏移
-	/// </summary>
-	int offset;
+	int offset; // BID 偏移
 
 	int re1;
 	int re2;
 
-	/// <summary>
-	/// BID 大小
-	/// </summary>
-	short size;
-
-	/// <summary>
-	/// BID 数量
-	/// </summary>
-	short count;
+	short size; // BID 大小
+	short count; // BID 数量
 
 	short r3;
 
-	/// <summary>
-	/// BID 起始值
-	/// </summary>
-	unsigned short val;
+	unsigned short val; // BID 起始值
 	//  List<BID_H> _bids;
 };
 
 
 struct BID_H
 {
-	/// <summary>
-	/// 长度
-	/// </summary>
-	int length;
-
-	/// <summary>
-	/// 偏移
-	/// </summary>
-	int offset;
+	int length; // 长度
+	int offset; // 偏移
 
 
 	//int _bindex;
@@ -60,25 +40,10 @@ struct BID_H
 
 struct BIDD_H
 {
-	/// <summary>
-	/// 图片宽度
-	/// </summary>
-	short width;
-
-	/// <summary>
-	/// 图片高度
-	/// </summary>
-	short height;
-
-	/// <summary>
-	/// 颜色深度
-	/// </summary>
-	short d3;
-
-	/// <summary>
-	/// 压缩模式
-	/// </summary>
-	short d4;
+	short width; // 图片宽度
+	short height; // 图片高度
+	short d3; // 颜色深度
+	short d4; // 压缩模式
 	unsigned short d5;
 	unsigned short d6;
 	unsigned short d7;
