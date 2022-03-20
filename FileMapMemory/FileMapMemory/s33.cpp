@@ -21,11 +21,10 @@ struct BID_H
 	int length; // 长度
 	int offset; // 偏移
 
-
+/*
 	//int _bindex;
 	//int _bid;
 	//  BIDD_H _bidd;
-/*
 		 string Id => $"BID_{_bid:X}";
 		 string Name => "";
 		 string Size => $"{_bidd.width}*{_bidd.height}";
@@ -47,6 +46,7 @@ struct BIDD_H
 	unsigned short d5;
 	unsigned short d6;
 	unsigned short d7;
+	int data[0]; // data image
 };
 
 
@@ -55,6 +55,7 @@ struct HEADER_H
 	int code;
 	char txt[4];
 };
+
 
 #include "s33.h"
 
@@ -74,7 +75,6 @@ void parse_data(void* pv) {
 	std::vector<BID_H> vecBid(bid, bid + rkrs->count);
 	std::vector<BIDD_H*> vecPbidd(ppbidd, ppbidd + rkrs->count);
 
-	read_image_data(pv, 0);
 	return;
 }
 
@@ -88,7 +88,8 @@ void* read_image_data(void* pv, int idx) {
 	BIDD_H* bidd = (BIDD_H*)((char*)pv +bid[idx].offset);
 
 	BIDD_H _bidd = *bidd;
-	int* data = (int*)(bidd + 1);
+	// int* data = (int*)(bidd + 1);
+	int* data =bidd->data;
 	int* bitmap = (int*)malloc(sizeof(int) * _bidd.width * _bidd.height);
 	if (!bitmap)
 		return NULL;
