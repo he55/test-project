@@ -1,5 +1,6 @@
 #include "s33.h"
 #include <stdlib.h>
+#include <assert.h>
 
 
 MyStruct* rkrs_open_file(const char* pszPathName)
@@ -20,7 +21,7 @@ MyStruct* rkrs_open_file(const char* pszPathName)
 		return NULL;
 	}
 
-	PVOID pvFile = MapViewOfFile(hFileMap, FILE_MAP_WRITE, 0, 0, 0);
+	PVOID pvFile = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
 	if (pvFile == NULL) {
 		CloseHandle(hFileMap);
 		CloseHandle(hFile);
@@ -28,9 +29,7 @@ MyStruct* rkrs_open_file(const char* pszPathName)
 	}
 
 	MyStruct* mys = (MyStruct*)malloc(sizeof(MyStruct));
-	if (mys == NULL) {
-		return NULL;
-	}
+	assert(mys != NULL);
 
 	*mys = { pvFile,hFileMap,hFile };
 	return mys;
@@ -48,7 +47,7 @@ void rkrs_close_file(MyStruct* mys)
 	CloseHandle(mys->hFile);
 
 	free(mys->mys2.ppbidd);
-	free((void*)mys);
+	free(mys);
 }
 
 
@@ -58,7 +57,10 @@ void rkrs_parse(MyStruct* mys, MyStruct2* mys2)
 	HEADER_H* h = (HEADER_H*)pv;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
 	BID_H* bid = (BID_H*)((char*)pv + rkrs->offset);
+
 	BIDD_H** ppbidd = (BIDD_H**)malloc(sizeof(void*) * rkrs->count);
+	assert(ppbidd != NULL);
+
 	for (size_t i = 0; i < rkrs->count; i++)
 	{
 		ppbidd[i] = (BIDD_H*)((char*)pv + bid[i].offset);
@@ -71,8 +73,7 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 {
 	void* pv = mys->pvFile;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
-	if (idx >= rkrs->count)
-		return NULL;
+	assert(idx < rkrs->count);
 
 	BID_H* bid = (BID_H*)((char*)pv + rkrs->offset);
 	BIDD_H* bidd = (BIDD_H*)((char*)pv + bid[idx].offset);
@@ -106,8 +107,7 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 				}
 			}
 		}
-
-		// Debug.Assert(y == _bidd.height);
+		assert(y == _bidd.height);
 	}
 	else if (_bidd.d4 == 0)
 	{
