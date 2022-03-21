@@ -8,9 +8,7 @@ MyStruct* rkrs_open_file(const char* pszPathName)
 	HANDLE hFile = CreateFile(pszPathName, GENERIC_WRITE | GENERIC_READ, 0, NULL
 		, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
-	{
 		return NULL;
-	}
 
 	DWORD dwFileSize = GetFileSize(hFile, NULL);
 
@@ -38,9 +36,8 @@ MyStruct* rkrs_open_file(const char* pszPathName)
 
 void rkrs_close_file(MyStruct* mys)
 {
-	if (mys == NULL) {
+	if (mys == NULL)
 		return;
-	}
 
 	UnmapViewOfFile(mys->pvFile);
 	CloseHandle(mys->hFileMap);
@@ -62,9 +59,8 @@ void rkrs_parse(MyStruct* mys, MyStruct2* mys2)
 	assert(ppbidd != NULL);
 
 	for (size_t i = 0; i < rkrs->count; i++)
-	{
 		ppbidd[i] = (BIDD_H*)((char*)pv + bid[i].offset);
-	}
+
 	*mys2 = mys->mys2 = { h,rkrs,bid,ppbidd };
 }
 
@@ -99,9 +95,7 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 				len += *(data++);
 
 			for (int i = 0; i < len; i++)
-			{
 				*(_bitmap++) = val;
-			}
 		}
 	}
 	else if (_bidd.d4 == 0)
@@ -124,9 +118,8 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 
 		int pix = _bidd.width * _bidd.height;
 		int curpix = 0;
-		while (curpix++ < pix) {
+		while (curpix++ < pix)
 			*(_bitmap++) = *(data++) | alpha;
-		}
 	}
 	return (void*)bitmap;
 }
