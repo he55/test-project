@@ -50,7 +50,7 @@ struct BIDD_H
 	unsigned short d5;
 	unsigned short d6;
 	unsigned short d7;
-	int data[0]; // data image
+	char data[0]; // image data
 };
 
 
@@ -63,10 +63,10 @@ struct HEADER_H
 
 struct MyStruct2
 {
-		HEADER_H* h ;
-	RKRS_H* rkrs ;
-	BID_H* bid ;
-	BIDD_H** ppbidd ;
+	HEADER_H* h;
+	RKRS_H* rkrs;
+	BID_H* bid;
+	BIDD_H** ppbidd;
 };
 
 
@@ -79,7 +79,7 @@ struct MyStruct
 };
 
 
-MyStruct * rkrs_open_file(const char* pszPathName);
-void rkrs_close_file(MyStruct *mys);
-void rkrs_parse(MyStruct *mys, MyStruct2 *mys2);
-void* rkrs_read_image_data(MyStruct *mys, int idx);
+MyStruct* rkrs_open_file(const char* pszPathName);
+void rkrs_close_file(MyStruct* mys);
+void rkrs_parse(MyStruct* mys, MyStruct2* mys2);
+void* rkrs_read_image_data(MyStruct* mys, int idx);

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-MyStruct * rkrs_open_file(const char* pszPathName)
+MyStruct* rkrs_open_file(const char* pszPathName)
 {
 	HANDLE hFile = CreateFile(pszPathName, GENERIC_WRITE | GENERIC_READ, 0, NULL
 		, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -37,7 +37,7 @@ MyStruct * rkrs_open_file(const char* pszPathName)
 }
 
 
-void rkrs_close_file(MyStruct *mys)
+void rkrs_close_file(MyStruct* mys)
 {
 	if (mys == NULL) {
 		return;
@@ -48,13 +48,13 @@ void rkrs_close_file(MyStruct *mys)
 	CloseHandle(mys->hFile);
 
 	free(mys->mys2.ppbidd);
-	free((void *)mys);
+	free((void*)mys);
 }
 
 
-void rkrs_parse(MyStruct *mys, MyStruct2 *mys2)
+void rkrs_parse(MyStruct* mys, MyStruct2* mys2)
 {
-	void *pv=mys->pvFile;
+	void* pv = mys->pvFile;
 	HEADER_H* h = (HEADER_H*)pv;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
 	BID_H* bid = (BID_H*)((char*)pv + rkrs->offset);
@@ -63,14 +63,13 @@ void rkrs_parse(MyStruct *mys, MyStruct2 *mys2)
 	{
 		ppbidd[i] = (BIDD_H*)((char*)pv + bid[i].offset);
 	}
-	mys->mys2={h,rkrs,bid,ppbidd};
-	mys2=&mys->mys2;
+	*mys2 = mys->mys2 = { h,rkrs,bid,ppbidd };
 }
 
 
-void* rkrs_read_image_data(MyStruct *mys, int idx)
+void* rkrs_read_image_data(MyStruct* mys, int idx)
 {
-	void *pv=mys->pvFile;
+	void* pv = mys->pvFile;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
 	if (idx >= rkrs->count)
 		return NULL;
@@ -79,7 +78,7 @@ void* rkrs_read_image_data(MyStruct *mys, int idx)
 	BIDD_H* bidd = (BIDD_H*)((char*)pv + bid[idx].offset);
 
 	BIDD_H _bidd = *bidd;
-	int* data = bidd->data;
+	int* data = (int*)bidd->data;
 	int* bitmap = (int*)malloc(sizeof(int) * _bidd.width * _bidd.height);
 	if (!bitmap)
 		return NULL;
