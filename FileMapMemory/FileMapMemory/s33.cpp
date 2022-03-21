@@ -81,12 +81,13 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 	BIDD_H _bidd = *bidd;
 	int* data = (int*)bidd->data;
 	int* bitmap = (int*)malloc(sizeof(int) * _bidd.width * _bidd.height);
-	if (!bitmap)
-		return NULL;
+	assert(bitmap != NULL);
+
+	int* _bitmap = bitmap;
 
 	if (_bidd.d4 == 1)
 	{
-		int x = 0, y = 0, v = 0;
+		int v = 0;
 		while (v = *(data++))
 		{
 			int val = v & 0x00ffffff;
@@ -99,28 +100,20 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 
 			for (int i = 0; i < len; i++)
 			{
-				bitmap[y * _bidd.width + x] = val;
-				if (++x == _bidd.width)
-				{
-					x = 0;
-					++y;
-				}
+				*(_bitmap++) = val;
 			}
 		}
-		assert(y == _bidd.height);
 	}
 	else if (_bidd.d4 == 0)
 	{
-		for (int y = 0; y < _bidd.height; y++)
-		{
-			for (int x = 0; x < _bidd.width; x++)
-			{
-				int val = *(data++);
-				if (val != 0x00ff00ff)
-					val |= 0xff000000;
+		int pix = _bidd.width * _bidd.height;
+		int curpix = 0;
+		while (curpix++ < pix) {
+			int val = *(data++);
+			if (val != 0x00ff00ff)
+				val |= 0xff000000;
 
-				bitmap[y * _bidd.width + x] = val;
-			}
+			*(_bitmap++) = val;
 		}
 	}
 	else if (_bidd.d4 == 5)
@@ -129,12 +122,10 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 		if (_bidd.d5 == 3)
 			alpha = 0xff000000;
 
-		for (int y = 0; y < _bidd.height; y++)
-		{
-			for (int x = 0; x < _bidd.width; x++)
-			{
-				bitmap[y * _bidd.width + x] = *(data++) | alpha;
-			}
+		int pix = _bidd.width * _bidd.height;
+		int curpix = 0;
+		while (curpix++ < pix) {
+			*(_bitmap++) = *(data++) | alpha;
 		}
 	}
 	return (void*)bitmap;
