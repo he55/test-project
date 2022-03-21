@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Windows.h>
+
+
 struct RKRS_H
 {
 	int offset; // BID 偏移
@@ -58,5 +61,25 @@ struct HEADER_H
 };
 
 
-void parse_data(void* pv);
-void* read_image_data(void* pv, int idx);
+struct MyStruct2
+{
+		HEADER_H* h ;
+	RKRS_H* rkrs ;
+	BID_H* bid ;
+	BIDD_H** ppbidd ;
+};
+
+
+struct MyStruct
+{
+	PVOID pvFile;
+	HANDLE hFileMap;
+	HANDLE hFile;
+	MyStruct2 mys2;
+};
+
+
+MyStruct * rkrs_open_file(const char* pszPathName);
+void rkrs_close_file(MyStruct *mys);
+void rkrs_parse(MyStruct *mys, MyStruct2 *mys2);
+void* rkrs_read_image_data(MyStruct *mys, int idx);

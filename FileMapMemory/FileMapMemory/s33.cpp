@@ -1,10 +1,60 @@
-
 #include "s33.h"
-
 #include <stdlib.h>
-#include <vector>
 
-void parse_data(void* pv) {
+
+MyStruct * rkrs_open_file(const char* pszPathName)
+{
+	HANDLE hFile = CreateFile(pszPathName, GENERIC_WRITE | GENERIC_READ, 0, NULL
+		, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return NULL;
+	}
+
+	DWORD dwFileSize = GetFileSize(hFile, NULL);
+
+	HANDLE hFileMap = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0,
+		dwFileSize + sizeof(char), NULL);
+	if (hFileMap == NULL) {
+		CloseHandle(hFile);
+		return NULL;
+	}
+
+	PVOID pvFile = MapViewOfFile(hFileMap, FILE_MAP_WRITE, 0, 0, 0);
+	if (pvFile == NULL) {
+		CloseHandle(hFileMap);
+		CloseHandle(hFile);
+		return NULL;
+	}
+
+	MyStruct* mys = (MyStruct*)malloc(sizeof(MyStruct));
+	if (mys == NULL) {
+		return NULL;
+	}
+
+	*mys = { pvFile,hFileMap,hFile };
+	return mys;
+}
+
+
+void rkrs_close_file(MyStruct *mys)
+{
+	if (mys == NULL) {
+		return;
+	}
+
+	UnmapViewOfFile(mys->pvFile);
+	CloseHandle(mys->hFileMap);
+	CloseHandle(mys->hFile);
+
+	free(mys->mys2.ppbidd);
+	free((void *)mys);
+}
+
+
+void rkrs_parse(MyStruct *mys, MyStruct2 *mys2)
+{
+	void *pv=mys->pvFile;
 	HEADER_H* h = (HEADER_H*)pv;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
 	BID_H* bid = (BID_H*)((char*)pv + rkrs->offset);
@@ -13,32 +63,30 @@ void parse_data(void* pv) {
 	{
 		ppbidd[i] = (BIDD_H*)((char*)pv + bid[i].offset);
 	}
-
-	std::vector<BID_H> vecBid(bid, bid + rkrs->count);
-	std::vector<BIDD_H*> vecPbidd(ppbidd, ppbidd + rkrs->count);
-
-	return;
+	mys->mys2={h,rkrs,bid,ppbidd};
+	mys2=&mys->mys2;
 }
 
 
-void* read_image_data(void* pv, int idx) {
+void* rkrs_read_image_data(MyStruct *mys, int idx)
+{
+	void *pv=mys->pvFile;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
 	if (idx >= rkrs->count)
 		return NULL;
 
 	BID_H* bid = (BID_H*)((char*)pv + rkrs->offset);
-	BIDD_H* bidd = (BIDD_H*)((char*)pv +bid[idx].offset);
+	BIDD_H* bidd = (BIDD_H*)((char*)pv + bid[idx].offset);
 
 	BIDD_H _bidd = *bidd;
-	// int* data = (int*)(bidd + 1);
-	int* data =bidd->data;
+	int* data = bidd->data;
 	int* bitmap = (int*)malloc(sizeof(int) * _bidd.width * _bidd.height);
 	if (!bitmap)
 		return NULL;
 
 	if (_bidd.d4 == 1)
 	{
-		int x = 0, y = 0, v =0;
+		int x = 0, y = 0, v = 0;
 		while (v = *(data++))
 		{
 			int val = v & 0x00ffffff;
