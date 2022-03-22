@@ -1,25 +1,23 @@
 #include "s33.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <Windows.h>
 
 
 MyStruct* rkrs_open_file(const char* pszPathName)
 {
-	HANDLE hFile = CreateFile(pszPathName, GENERIC_WRITE | GENERIC_READ, 0, NULL
-		, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(pszPathName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 		return NULL;
 
 	DWORD dwFileSize = GetFileSize(hFile, NULL);
-
-	HANDLE hFileMap = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0,
-		dwFileSize + sizeof(char), NULL);
+	HANDLE hFileMap = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, dwFileSize, NULL);
 	if (hFileMap == NULL) {
 		CloseHandle(hFile);
 		return NULL;
 	}
 
-	PVOID pvFile = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
+	void* pvFile = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
 	if (pvFile == NULL) {
 		CloseHandle(hFileMap);
 		CloseHandle(hFile);

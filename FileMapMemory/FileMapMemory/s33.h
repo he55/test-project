@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Windows.h>
-
-
 struct RKRS_H
 {
 	int offset; // BID 偏移
@@ -72,9 +69,9 @@ struct MyStruct2
 
 struct MyStruct
 {
-	PVOID pvFile;
-	HANDLE hFileMap;
-	HANDLE hFile;
+	void* pvFile;
+	void* hFileMap;
+	void* hFile;
 	MyStruct2 mys2;
 };
 
