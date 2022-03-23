@@ -34,8 +34,7 @@ MyStruct* rkrs_open_file(const char* pszPathName)
 
 void rkrs_close_file(MyStruct* mys)
 {
-	if (mys == NULL)
-		return;
+	assert(mys != NULL);
 
 	UnmapViewOfFile(mys->pvFile);
 	CloseHandle(mys->hFileMap);
@@ -48,6 +47,8 @@ void rkrs_close_file(MyStruct* mys)
 
 void rkrs_parse(MyStruct* mys, MyStruct2* mys2)
 {
+	assert(mys != NULL);
+
 	void* pv = mys->pvFile;
 	HEADER_H* h = (HEADER_H*)pv;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
@@ -65,6 +66,8 @@ void rkrs_parse(MyStruct* mys, MyStruct2* mys2)
 
 void* rkrs_read_image_data(MyStruct* mys, int idx)
 {
+	assert(mys != NULL);
+
 	void* pv = mys->pvFile;
 	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
 	assert(idx < rkrs->count);
@@ -123,10 +126,7 @@ void* rkrs_read_image_data(MyStruct* mys, int idx)
 }
 
 
-void parse_data2(void* pv) {
-	HEADER_H* h = (HEADER_H*)pv;
-	RKRS_H* rkrs = (RKRS_H*)((char*)pv + 0x30);
-	BID_H* bid = (BID_H*)((char*)pv + rkrs->offset);
-	BIDD_H* bidd = (BIDD_H*)((char*)pv + bid->offset);
-	return;
+void rkrs_free_image_data(void * img)
+{
+	free(img);
 }

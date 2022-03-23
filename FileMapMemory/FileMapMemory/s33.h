@@ -4,13 +4,13 @@ struct RKRS_H
 {
 	int offset; // BID 偏移
 
-	int re1;
-	int re2;
+	int unk1;
+	int unk2;
 
 	short size; // BID 大小
 	short count; // BID 数量
 
-	short r3;
+	short unk3;
 
 	unsigned short val; // BID 起始值
 	//  List<BID_H> _bids;
@@ -80,3 +80,4 @@ MyStruct* rkrs_open_file(const char* pszPathName);
 void rkrs_close_file(MyStruct* mys);
 void rkrs_parse(MyStruct* mys, MyStruct2* mys2);
 void* rkrs_read_image_data(MyStruct* mys, int idx);
+void rkrs_free_image_data(void * img);
