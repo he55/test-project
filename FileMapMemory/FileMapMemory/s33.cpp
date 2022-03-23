@@ -48,6 +48,7 @@ void rkrs_close_file(MyStruct* mys)
 void rkrs_parse(MyStruct* mys, MyStruct2* mys2)
 {
 	assert(mys != NULL);
+	assert(mys2 != NULL);
 
 	void* pv = mys->pvFile;
 	HEADER_H* h = (HEADER_H*)pv;
