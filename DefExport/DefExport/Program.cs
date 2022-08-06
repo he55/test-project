@@ -17,7 +17,7 @@ namespace DefExport
 
                 string v = streamReader.ReadLine();
                 int v1 = v.IndexOf("File Type: DLL");
-                if (v1 > 0)
+                if (v1 >=0)
                     break;
             }
 
@@ -29,7 +29,7 @@ namespace DefExport
 
                 string v = streamReader.ReadLine();
                 int v1 = v.IndexOf("number of functions");
-                if (v1 > 0)
+                if (v1 >=0)
                 {
                     string v2 = v.Substring(0, v1);
                     num= int.Parse(v2);
@@ -38,14 +38,14 @@ namespace DefExport
             }
 
             int idx = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i <5; i++)
             {
-                if (i == 9)
+                if (i == 4)
                     return;
 
                 string v = streamReader.ReadLine();
                 int v1 = v.IndexOf("ordinal");
-                if (v1 > 0)
+                if (v1 >=0)
                 {
                     idx= v.IndexOf("name");
                     streamReader.ReadLine();
