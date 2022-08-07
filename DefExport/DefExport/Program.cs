@@ -10,9 +10,9 @@ namespace DefExport
         {
             string p = @"C:\Users\luckh\Desktop\exports.txt";
             StreamReader streamReader = File.OpenText(p);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i <8; i++)
             {
-                if (i == 9)
+                if (i ==7)
                     return;
 
                 string v = streamReader.ReadLine();
@@ -21,9 +21,9 @@ namespace DefExport
                     break;
             }
 
-  for (int i = 0; i <4; i++)
+  for (int i = 0; i <3; i++)
             {
-                if (i ==3)
+                if (i ==2)
                     return;
 
                 string v = streamReader.ReadLine();
@@ -33,9 +33,9 @@ namespace DefExport
             }
 
             int num = 0;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i <7; i++)
             {
-                if (i == 9)
+                if (i ==6)
                     return;
 
                 string v = streamReader.ReadLine();
@@ -54,9 +54,9 @@ namespace DefExport
             int ihi=0;
             int lenHi=0;
             int lenOrd=0;
-            for (int i = 0; i <5; i++)
+            for (int i = 0; i <4; i++)
             {
-                if (i == 4)
+                if (i ==3)
                     return;
 
                 string v = streamReader.ReadLine();
