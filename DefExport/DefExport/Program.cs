@@ -74,18 +74,26 @@ namespace DefExport
                 }
             }
 
+            string tmpPath = "tmp.def";
+            StreamWriter streamWriter = File.CreateText(tmpPath);
+            streamWriter.WriteLine("EXPORTS");
+            
             List<MyDef2> syms = new List<MyDef2>();
             for (int i = 0; i < num; i++)
             {
                 vstr = streamReader.ReadLine();
-                string strOrd = vstr.Substring(0, lenOrd);
+                string strName = vstr.Substring(iname);
+                if(true){
+                    streamWriter.WriteLine(strName);
+                }else{
+  string strOrd = vstr.Substring(0, lenOrd);
                 string strHi = vstr.Substring(ihi, lenHi);
                 string strRva = vstr.Substring(irva, lenRva);
-                string strName = vstr.Substring(iname);
                 syms.Add(new MyDef2 { ordinal = strOrd, hint = strHi, RVA = strRva, name = strName });
+                }
             }
 
-
+            streamWriter.Close();
             streamReader.Close();
         }
     }
