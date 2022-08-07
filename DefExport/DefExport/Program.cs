@@ -37,7 +37,12 @@ namespace DefExport
                 }
             }
 
-            int idx = 0;
+            int iname=0;
+            int irva=0;
+            int lenRva=0;
+            int ihi=0;
+            int lenHi=0;
+            int lenOrd=0;
             for (int i = 0; i <5; i++)
             {
                 if (i == 4)
@@ -47,22 +52,37 @@ namespace DefExport
                 int v1 = v.IndexOf("ordinal");
                 if (v1 >=0)
                 {
-                    idx= v.IndexOf("name");
+                   iname= v.IndexOf("name");
+                   irva= v.IndexOf("RVA");
+                   lenRva=iname-irva;
+                   ihi= v.IndexOf("hint");
+                   lenHi=irva-ihi;
+                   lenOrd=ihi;
                     streamReader.ReadLine();
                     break;
                 }
             }
 
-            List<string> syms = new List<string>();
+            List<MyDef2> syms = new List<MyDef2>();
             for (int i = 0; i < num; i++)
             {
                 string v = streamReader.ReadLine();
-                string v1 = v.Substring(idx);
-                syms.Add(v1);
+                string strOrd=v.Substring(0,lenOrd);
+                string strHi=v.Substring(ihi,lenHi);
+                string strRva=v.Substring(irva,lenRva);
+                string strName=v.Substring(iname);
+                syms.Add(new MyDef2());
             }
 
 
             streamReader.Close();
         }
+    }
+
+    public class MyDef2{
+        public int ordinal; 
+public int hint; 
+public int RVA; 
+public string name;
     }
 }
