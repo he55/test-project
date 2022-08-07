@@ -21,6 +21,17 @@ namespace DefExport
                     break;
             }
 
+  for (int i = 0; i <4; i++)
+            {
+                if (i ==3)
+                    return;
+
+                string v = streamReader.ReadLine();
+                int v1 = v.IndexOf("Section contains the following exports for");
+                if (v1 >=0)
+                    break;
+            }
+
             int num = 0;
             for (int i = 0; i < 10; i++)
             {
@@ -71,7 +82,7 @@ namespace DefExport
                 string strHi=v.Substring(ihi,lenHi);
                 string strRva=v.Substring(irva,lenRva);
                 string strName=v.Substring(iname);
-                syms.Add(new MyDef2());
+                syms.Add(new MyDef2{ordinal=strOrd,hint=strHi,RVA=strRva,name=strName});
             }
 
 
@@ -80,9 +91,9 @@ namespace DefExport
     }
 
     public class MyDef2{
-        public int ordinal; 
-public int hint; 
-public int RVA; 
+        public string ordinal; 
+public string hint; 
+public string RVA; 
 public string name;
     }
 }
