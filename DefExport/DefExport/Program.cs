@@ -8,14 +8,15 @@ namespace DefExport
         static void Main(string[] args)
         {
             string p = @"C:\Users\luckh\Desktop\exports.txt";
+            string vstr;
             StreamReader streamReader = File.OpenText(p);
             for (int i = 0; i < 8; i++)
             {
                 if (i == 7)
                     return;
 
-                string v = streamReader.ReadLine();
-                int v1 = v.IndexOf("File Type: DLL");
+                vstr = streamReader.ReadLine();
+                int v1 = vstr.IndexOf("File Type: DLL");
                 if (v1 >= 0)
                     break;
             }
@@ -25,8 +26,8 @@ namespace DefExport
                 if (i == 2)
                     return;
 
-                string v = streamReader.ReadLine();
-                int v1 = v.IndexOf("Section contains the following exports for");
+                vstr = streamReader.ReadLine();
+                int v1 = vstr.IndexOf("Section contains the following exports for");
                 if (v1 >= 0)
                     break;
             }
@@ -37,11 +38,11 @@ namespace DefExport
                 if (i == 6)
                     return;
 
-                string v = streamReader.ReadLine();
-                int v1 = v.IndexOf("number of functions");
+                vstr = streamReader.ReadLine();
+                int v1 = vstr.IndexOf("number of functions");
                 if (v1 >= 0)
                 {
-                    string v2 = v.Substring(0, v1);
+                    string v2 = vstr.Substring(0, v1);
                     num = int.Parse(v2);
                     break;
                 }
@@ -58,17 +59,17 @@ namespace DefExport
                 if (i == 3)
                     return;
 
-                string v = streamReader.ReadLine();
-                int v1 = v.IndexOf("ordinal");
+                vstr = streamReader.ReadLine();
+                int v1 = vstr.IndexOf("ordinal");
                 if (v1 >= 0)
                 {
-                    iname = v.IndexOf("name");
-                    irva = v.IndexOf("RVA");
+                    iname = vstr.IndexOf("name");
+                    irva = vstr.IndexOf("RVA");
                     lenRva = iname - irva;
-                    ihi = v.IndexOf("hint");
+                    ihi = vstr.IndexOf("hint");
                     lenHi = irva - ihi;
                     lenOrd = ihi;
-                    streamReader.ReadLine();
+                    vstr = streamReader.ReadLine();
                     break;
                 }
             }
@@ -76,11 +77,11 @@ namespace DefExport
             List<MyDef2> syms = new List<MyDef2>();
             for (int i = 0; i < num; i++)
             {
-                string v = streamReader.ReadLine();
-                string strOrd = v.Substring(0, lenOrd);
-                string strHi = v.Substring(ihi, lenHi);
-                string strRva = v.Substring(irva, lenRva);
-                string strName = v.Substring(iname);
+                vstr = streamReader.ReadLine();
+                string strOrd = vstr.Substring(0, lenOrd);
+                string strHi = vstr.Substring(ihi, lenHi);
+                string strRva = vstr.Substring(irva, lenRva);
+                string strName = vstr.Substring(iname);
                 syms.Add(new MyDef2 { ordinal = strOrd, hint = strHi, RVA = strRva, name = strName });
             }
 
