@@ -18,19 +18,20 @@ namespace DefExport
 
                 vstr = streamReader.ReadLine();
                 int v1 = vstr.IndexOf("File Type: DLL");
-                if (v1 >= 0){
-                vstr = streamReader.ReadLine();
-                vstr = streamReader.ReadLine();
-                int v2=vstr.IndexOf("FILE HEADER VALUES");
-                if(v2==-1)
-                return;
+                if (v1 >= 0)
+                {
+                    vstr = streamReader.ReadLine();
+                    vstr = streamReader.ReadLine();
+                    int v2 = vstr.IndexOf("FILE HEADER VALUES");
+                    if (v2 == -1)
+                        return;
 
-                vstr = streamReader.ReadLine();
-                int v3=vstr.IndexOf("machine");
-                if(v3==-1)
-                return;
+                    vstr = streamReader.ReadLine();
+                    int v3 = vstr.IndexOf("machine");
+                    if (v3 == -1)
+                        return;
 
-               arc=vstr.Substring(v3);
+                    arc = vstr.Substring(v3);
 
                     break;
                 }
@@ -38,15 +39,15 @@ namespace DefExport
 
             while (true)
             {
-                  vstr = streamReader.ReadLine();
-                  if(vstr==null)
-                  return;
+                vstr = streamReader.ReadLine();
+                if (vstr == null)
+                    return;
 
                 int v1 = vstr.IndexOf("Section contains the following exports for");
                 if (v1 >= 0)
                     break;
             }
-            
+
             int num = 0;
             for (int i = 0; i < 7; i++)
             {
@@ -63,37 +64,40 @@ namespace DefExport
                 }
             }
 
-                vstr = streamReader.ReadLine();
-                vstr = streamReader.ReadLine();
-                vstr = streamReader.ReadLine();
-                int vv1 = vstr.IndexOf("ordinal");
-                if(vv1==-1)
+            vstr = streamReader.ReadLine();
+            vstr = streamReader.ReadLine();
+            vstr = streamReader.ReadLine();
+            int vv1 = vstr.IndexOf("ordinal");
+            if (vv1 == -1)
                 return;
 
-                   int iname = vstr.IndexOf("name");
-                   int irva = vstr.IndexOf("RVA");
-                   int lenRva = iname - irva;
-                   int ihi = vstr.IndexOf("hint");
-                   int lenHi = irva - ihi;
-                   int lenOrd = ihi;
-                    vstr = streamReader.ReadLine();
-                 
+            int iname = vstr.IndexOf("name");
+            int irva = vstr.IndexOf("RVA");
+            int lenRva = iname - irva;
+            int ihi = vstr.IndexOf("hint");
+            int lenHi = irva - ihi;
+            int lenOrd = ihi;
+            vstr = streamReader.ReadLine();
+
             string tmpPath = "tmp.def";
             StreamWriter streamWriter = File.CreateText(tmpPath);
             streamWriter.WriteLine("EXPORTS");
-            
+
             List<MyDef2> syms = new List<MyDef2>();
             for (int i = 0; i < num; i++)
             {
                 vstr = streamReader.ReadLine();
                 string strName = vstr.Substring(iname);
-                if(true){
+                if (true)
+                {
                     streamWriter.WriteLine(strName);
-                }else{
-  string strOrd = vstr.Substring(0, lenOrd);
-                string strHi = vstr.Substring(ihi, lenHi);
-                string strRva = vstr.Substring(irva, lenRva);
-                syms.Add(new MyDef2 { ordinal = strOrd, hint = strHi, RVA = strRva, name = strName });
+                }
+                else
+                {
+                    string strOrd = vstr.Substring(0, lenOrd);
+                    string strHi = vstr.Substring(ihi, lenHi);
+                    string strRva = vstr.Substring(irva, lenRva);
+                    syms.Add(new MyDef2 { ordinal = strOrd, hint = strHi, RVA = strRva, name = strName });
                 }
             }
 
