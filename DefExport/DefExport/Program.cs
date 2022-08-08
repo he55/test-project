@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace DefExport
@@ -7,10 +8,23 @@ namespace DefExport
     {
         static void Main(string[] args)
         {
-            string p = @"C:\Users\luckh\Desktop\exports.txt";
+            string dumpbinPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x86\dumpbin.exe";
+            string tmpFilePath = "exp.txt";
+            string dllPath = @"C:\Program Files (x86)\Common Files\Apple\Mobile Device Support\CFNetwork.dll";
+
+            Process process = Process.Start(new ProcessStartInfo
+            {
+                FileName = dumpbinPath,
+                Arguments = $"/HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllPath}\"",
+                WindowStyle = ProcessWindowStyle.Hidden
+            });
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+                return;
+
             string vstr;
             string arc;
-            StreamReader streamReader = File.OpenText(p);
+            StreamReader streamReader = File.OpenText(tmpFilePath);
             for (int i = 0; i < 8; i++)
             {
                 if (i == 7)
@@ -32,7 +46,6 @@ namespace DefExport
                         return;
 
                     arc = vstr.Substring(v3);
-
                     break;
                 }
             }
