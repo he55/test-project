@@ -36,17 +36,17 @@ namespace DefExport
                 }
             }
 
-            for (int i = 0; i < 3; i++)
+            while (true)
             {
-                if (i == 2)
-                    return;
+                  vstr = streamReader.ReadLine();
+                  if(vstr==null)
+                  return;
 
-                vstr = streamReader.ReadLine();
                 int v1 = vstr.IndexOf("Section contains the following exports for");
                 if (v1 >= 0)
                     break;
             }
-
+            
             int num = 0;
             for (int i = 0; i < 7; i++)
             {
@@ -63,32 +63,21 @@ namespace DefExport
                 }
             }
 
-            int iname = 0;
-            int irva = 0;
-            int lenRva = 0;
-            int ihi = 0;
-            int lenHi = 0;
-            int lenOrd = 0;
-            for (int i = 0; i < 4; i++)
-            {
-                if (i == 3)
-                    return;
-
                 vstr = streamReader.ReadLine();
-                int v1 = vstr.IndexOf("ordinal");
-                if (v1 >= 0)
-                {
-                    iname = vstr.IndexOf("name");
-                    irva = vstr.IndexOf("RVA");
-                    lenRva = iname - irva;
-                    ihi = vstr.IndexOf("hint");
-                    lenHi = irva - ihi;
-                    lenOrd = ihi;
-                    vstr = streamReader.ReadLine();
-                    break;
-                }
-            }
+                vstr = streamReader.ReadLine();
+                vstr = streamReader.ReadLine();
+                int vv1 = vstr.IndexOf("ordinal");
+                if(vv1==-1)
+                return;
 
+                   int iname = vstr.IndexOf("name");
+                   int irva = vstr.IndexOf("RVA");
+                   int lenRva = iname - irva;
+                   int ihi = vstr.IndexOf("hint");
+                   int lenHi = irva - ihi;
+                   int lenOrd = ihi;
+                    vstr = streamReader.ReadLine();
+                 
             string tmpPath = "tmp.def";
             StreamWriter streamWriter = File.CreateText(tmpPath);
             streamWriter.WriteLine("EXPORTS");
