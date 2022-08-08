@@ -9,6 +9,7 @@ namespace DefExport
         {
             string p = @"C:\Users\luckh\Desktop\exports.txt";
             string vstr;
+            string arc;
             StreamReader streamReader = File.OpenText(p);
             for (int i = 0; i < 8; i++)
             {
@@ -17,8 +18,22 @@ namespace DefExport
 
                 vstr = streamReader.ReadLine();
                 int v1 = vstr.IndexOf("File Type: DLL");
-                if (v1 >= 0)
+                if (v1 >= 0){
+                vstr = streamReader.ReadLine();
+                vstr = streamReader.ReadLine();
+                int v2=vstr.IndexOf("FILE HEADER VALUES");
+                if(v2==-1)
+                return;
+
+                vstr = streamReader.ReadLine();
+                int v3=vstr.IndexOf("machine");
+                if(v3==-1)
+                return;
+
+               arc=vstr.Substring(v3);
+
                     break;
+                }
             }
 
             for (int i = 0; i < 3; i++)
