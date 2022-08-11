@@ -9,8 +9,12 @@ namespace DefExport
         static void Main(string[] args)
         {
             string dumpbinPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x86\dumpbin.exe";
-            string tmpFilePath = "exp.txt";
             string dllPath = @"C:\Program Files (x86)\Common Files\Apple\Mobile Device Support\CFNetwork.dll";
+            string fname = Path.GetFileNameWithoutExtension(dllPath);
+            string tmpFilePath = fname + "tmp.txt";
+            string defPath = fname + ".def";
+            string libPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x86\lib.exe";
+            string outputLib = fname + ".lib";
 
             Process process = Process.Start(new ProcessStartInfo
             {
@@ -23,7 +27,7 @@ namespace DefExport
                 return;
 
             string vstr;
-            string arc;
+            string arch;
             StreamReader streamReader = File.OpenText(tmpFilePath);
             for (int i = 0; i < 8; i++)
             {
@@ -45,7 +49,9 @@ namespace DefExport
                     if (v3 == -1)
                         return;
 
-                    arc = vstr.Substring(v3);
+                    int idxs = vstr.IndexOf("(");
+                    int idxe = vstr.IndexOf(")");
+                    arch = vstr.Substring(idxs, idxe - idxs);
                     break;
                 }
             }
@@ -92,8 +98,7 @@ namespace DefExport
             int lenOrd = ihi;
             vstr = streamReader.ReadLine();
 
-            string tmpPath = "tmp.def";
-            StreamWriter streamWriter = File.CreateText(tmpPath);
+            StreamWriter streamWriter = File.CreateText(defPath);
             streamWriter.WriteLine("EXPORTS");
 
             List<MyDef2> syms = new List<MyDef2>();
