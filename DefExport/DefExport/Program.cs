@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -7,13 +6,13 @@ namespace DefExport
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             if (args.Length == 0)
-                return;
+                return -1;
 
             if (!File.Exists(args[0]))
-                return;
+                return -1;
 
             string toolPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x64";
             string dumpbinPath = Path.Combine(toolPath, "dumpbin.exe");
@@ -27,12 +26,13 @@ namespace DefExport
             Process process = Process.Start(new ProcessStartInfo
             {
                 FileName = dumpbinPath,
-                Arguments = $"/HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllPath}\"",
+                Arguments = $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllPath}\"",
+                UseShellExecute = false,
                 WindowStyle = ProcessWindowStyle.Hidden
             });
             process.WaitForExit();
             if (process.ExitCode != 0)
-                return;
+                return -1;
 
             string vstr;
             string arch = null;
@@ -40,7 +40,7 @@ namespace DefExport
             for (int i = 0; i < 8; i++)
             {
                 if (i == 7)
-                    return;
+                    return -1;
 
                 vstr = streamReader.ReadLine();
                 int v1 = vstr.IndexOf("File Type: DLL");
@@ -50,12 +50,12 @@ namespace DefExport
                     vstr = streamReader.ReadLine();
                     int v2 = vstr.IndexOf("FILE HEADER VALUES");
                     if (v2 == -1)
-                        return;
+                        return -1;
 
                     vstr = streamReader.ReadLine();
                     int v3 = vstr.IndexOf("machine");
                     if (v3 == -1)
-                        return;
+                        return -1;
 
                     int idxs = vstr.IndexOf("(") + 1;
                     int idxe = vstr.IndexOf(")");
@@ -68,7 +68,7 @@ namespace DefExport
             {
                 vstr = streamReader.ReadLine();
                 if (vstr == null)
-                    return;
+                    return -1;
 
                 int v1 = vstr.IndexOf("Section contains the following exports for");
                 if (v1 >= 0)
@@ -79,7 +79,7 @@ namespace DefExport
             for (int i = 0; i < 7; i++)
             {
                 if (i == 6)
-                    return;
+                    return -1;
 
                 vstr = streamReader.ReadLine();
                 int v1 = vstr.IndexOf("number of functions");
@@ -96,7 +96,7 @@ namespace DefExport
             vstr = streamReader.ReadLine();
             int vv1 = vstr.IndexOf("ordinal");
             if (vv1 == -1)
-                return;
+                return -1;
 
             int iname = vstr.IndexOf("name");
             int irva = vstr.IndexOf("RVA");
@@ -136,14 +136,16 @@ namespace DefExport
             Process process1 = Process.Start(new ProcessStartInfo
             {
                 FileName = libPath,
-                Arguments = $"/DEF:\"{defPath}\" /MACHINE:{arch} /OUT:\"{outputLib}\"",
+                Arguments = $"/NOLOGO /DEF:\"{defPath}\" /MACHINE:{arch} /OUT:\"{outputLib}\"",
+                UseShellExecute = false,
+                RedirectStandardError = true,
                 WindowStyle = ProcessWindowStyle.Hidden
             });
             process1.WaitForExit();
             if (process1.ExitCode != 0)
-                return;
+                return -1;
 
-            Console.WriteLine("OK");
+            return 0;
         }
     }
 
