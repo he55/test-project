@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -11,7 +12,7 @@ namespace DefExport
             string dumpbinPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x86\dumpbin.exe";
             string dllPath = @"C:\Program Files (x86)\Common Files\Apple\Mobile Device Support\CFNetwork.dll";
             string fname = Path.GetFileNameWithoutExtension(dllPath);
-            string tmpFilePath = fname + "tmp.txt";
+            string tmpFilePath = fname + ".tmp.txt";
             string defPath = fname + ".def";
             string libPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x86\lib.exe";
             string outputLib = fname + ".lib";
@@ -27,7 +28,7 @@ namespace DefExport
                 return;
 
             string vstr;
-            string arch;
+            string arch = null;
             StreamReader streamReader = File.OpenText(tmpFilePath);
             for (int i = 0; i < 8; i++)
             {
@@ -49,7 +50,7 @@ namespace DefExport
                     if (v3 == -1)
                         return;
 
-                    int idxs = vstr.IndexOf("(");
+                    int idxs = vstr.IndexOf("(") + 1;
                     int idxe = vstr.IndexOf(")");
                     arch = vstr.Substring(idxs, idxe - idxs);
                     break;
@@ -121,6 +122,18 @@ namespace DefExport
 
             streamWriter.Close();
             streamReader.Close();
+
+            Process process1 = Process.Start(new ProcessStartInfo
+            {
+                FileName = libPath,
+                Arguments = $"/DEF:\"{defPath}\" /MACHINE:{arch} /OUT:\"{outputLib}\"",
+                WindowStyle = ProcessWindowStyle.Hidden
+            });
+            process1.WaitForExit();
+            if (process1.ExitCode != 0)
+                return;
+
+            Console.WriteLine("OK");
         }
     }
 
