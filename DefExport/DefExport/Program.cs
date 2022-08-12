@@ -9,12 +9,19 @@ namespace DefExport
     {
         static void Main(string[] args)
         {
-            string dumpbinPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x86\dumpbin.exe";
-            string dllPath = @"C:\Program Files (x86)\Common Files\Apple\Mobile Device Support\CFNetwork.dll";
+            if (args.Length == 0)
+                return;
+
+            if (!File.Exists(args[0]))
+                return;
+
+            string toolPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x64";
+            string dumpbinPath = Path.Combine(toolPath, "dumpbin.exe");
+            string dllPath = Path.GetFullPath(args[0]);
             string fname = Path.GetFileNameWithoutExtension(dllPath);
             string tmpFilePath = fname + ".tmp.txt";
             string defPath = fname + ".def";
-            string libPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x86\lib.exe";
+            string libPath = Path.Combine(toolPath, "lib.exe");
             string outputLib = fname + ".lib";
 
             Process process = Process.Start(new ProcessStartInfo
@@ -107,6 +114,10 @@ namespace DefExport
             {
                 vstr = streamReader.ReadLine();
                 string strName = vstr.Substring(iname);
+                string strRva = vstr.Substring(irva, lenRva);
+                if (string.IsNullOrWhiteSpace(strRva))
+                    continue;
+
                 if (true)
                 {
                     streamWriter.WriteLine(strName);
@@ -115,7 +126,6 @@ namespace DefExport
                 {
                     string strOrd = vstr.Substring(0, lenOrd);
                     string strHi = vstr.Substring(ihi, lenHi);
-                    string strRva = vstr.Substring(irva, lenRva);
                     syms.Add(new MyDef2 { ordinal = strOrd, hint = strHi, RVA = strRva, name = strName });
                 }
             }
