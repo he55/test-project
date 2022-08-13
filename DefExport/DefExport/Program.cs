@@ -16,11 +16,12 @@ namespace DefExport
 
             string toolPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x64";
             string dumpbinPath = Path.Combine(toolPath, "dumpbin.exe");
+            string libPath = Path.Combine(toolPath, "lib.exe");
+
             string dllPath = Path.GetFullPath(args[0]);
             string fname = Path.GetFileNameWithoutExtension(dllPath);
             string tmpFilePath = fname + ".tmp.txt";
             string defPath = fname + ".def";
-            string libPath = Path.Combine(toolPath, "lib.exe");
             string outputLib = fname + ".lib";
 
             Process process = Process.Start(new ProcessStartInfo
@@ -34,7 +35,7 @@ namespace DefExport
             if (process.ExitCode != 0)
                 return -1;
 
-            string vstr;
+            string str;
             string arch = null;
             StreamReader streamReader = File.OpenText(tmpFilePath);
             for (int i = 0; i < 8; i++)
@@ -42,80 +43,80 @@ namespace DefExport
                 if (i == 7)
                     return -1;
 
-                vstr = streamReader.ReadLine();
-                int v1 = vstr.IndexOf("File Type: DLL");
-                if (v1 >= 0)
+                str = streamReader.ReadLine();
+                int idx1 = str.IndexOf("File Type: DLL");
+                if (idx1 >= 0)
                 {
-                    vstr = streamReader.ReadLine();
-                    vstr = streamReader.ReadLine();
-                    int v2 = vstr.IndexOf("FILE HEADER VALUES");
-                    if (v2 == -1)
+                    str = streamReader.ReadLine();
+                    str = streamReader.ReadLine();
+                    int idx2 = str.IndexOf("FILE HEADER VALUES");
+                    if (idx2 == -1)
                         return -1;
 
-                    vstr = streamReader.ReadLine();
-                    int v3 = vstr.IndexOf("machine");
-                    if (v3 == -1)
+                    str = streamReader.ReadLine();
+                    int idx3 = str.IndexOf("machine");
+                    if (idx3 == -1)
                         return -1;
 
-                    int idxs = vstr.IndexOf("(") + 1;
-                    int idxe = vstr.IndexOf(")");
-                    arch = vstr.Substring(idxs, idxe - idxs);
+                    int idxStart = str.IndexOf("(") + 1;
+                    int idxEnd = str.IndexOf(")");
+                    arch = str.Substring(idxStart, idxEnd - idxStart);
                     break;
                 }
             }
 
             while (true)
             {
-                vstr = streamReader.ReadLine();
-                if (vstr == null)
+                str = streamReader.ReadLine();
+                if (str == null)
                     return -1;
 
-                int v1 = vstr.IndexOf("Section contains the following exports for");
-                if (v1 >= 0)
+                int idx = str.IndexOf("Section contains the following exports for");
+                if (idx >= 0)
                     break;
             }
 
-            int num = 0;
+            int number = 0;
             for (int i = 0; i < 7; i++)
             {
                 if (i == 6)
                     return -1;
 
-                vstr = streamReader.ReadLine();
-                int v1 = vstr.IndexOf("number of functions");
-                if (v1 >= 0)
+                str = streamReader.ReadLine();
+                int idx = str.IndexOf("number of functions");
+                if (idx >= 0)
                 {
-                    string v2 = vstr.Substring(0, v1);
-                    num = int.Parse(v2);
+                    string strNumber = str.Substring(0, idx);
+                    number = int.Parse(strNumber);
                     break;
                 }
             }
 
-            vstr = streamReader.ReadLine();
-            vstr = streamReader.ReadLine();
-            vstr = streamReader.ReadLine();
-            int vv1 = vstr.IndexOf("ordinal");
-            if (vv1 == -1)
+            str = streamReader.ReadLine();
+            str = streamReader.ReadLine();
+            str = streamReader.ReadLine();
+            int idxOrdinal = str.IndexOf("ordinal");
+            if (idxOrdinal == -1)
                 return -1;
 
-            int iname = vstr.IndexOf("name");
-            int irva = vstr.IndexOf("RVA");
-            int lenRva = iname - irva;
-            int ihi = vstr.IndexOf("hint");
-            int lenHi = irva - ihi;
-            int lenOrd = ihi;
-            vstr = streamReader.ReadLine();
+            int idxName = str.IndexOf("name");
+            int idxRVA = str.IndexOf("RVA");
+            int lenRVA = idxName - idxRVA;
+            int idxHint = str.IndexOf("hint");
+            int lenHint = idxRVA - idxHint;
+            int lenOrdinal = idxHint;
+            str = streamReader.ReadLine();
 
+            List<Symbol> symbols = new List<Symbol>();
             StreamWriter streamWriter = File.CreateText(defPath);
             streamWriter.WriteLine("EXPORTS");
 
-            List<MyDef2> syms = new List<MyDef2>();
-            for (int i = 0; i < num; i++)
+            for (int i = 0; i < number; i++)
             {
-                vstr = streamReader.ReadLine();
-                string strName = vstr.Substring(iname);
-                string strRva = vstr.Substring(irva, lenRva);
-                if (string.IsNullOrWhiteSpace(strRva))
+                str = streamReader.ReadLine();
+                string strName = str.Substring(idxName);
+                string strRVA = str.Substring(idxRVA, lenRVA);
+                if (string.IsNullOrWhiteSpace(strRVA))
                     continue;
 
                 if (true)
@@ -124,9 +125,9 @@ namespace DefExport
                 }
                 else
                 {
-                    string strOrd = vstr.Substring(0, lenOrd);
-                    string strHi = vstr.Substring(ihi, lenHi);
-                    syms.Add(new MyDef2 { ordinal = strOrd, hint = strHi, RVA = strRva, name = strName });
+                    string strOrdinal = str.Substring(0, lenOrdinal);
+                    string strHint = str.Substring(idxHint, lenHint);
+                    symbols.Add(new Symbol { ordinal = strOrdinal, hint = strHint, RVA = strRVA, name = strName });
                 }
             }
 
@@ -149,7 +150,7 @@ namespace DefExport
         }
     }
 
-    public class MyDef2
+    public class Symbol
     {
         public string ordinal;
         public string hint;
