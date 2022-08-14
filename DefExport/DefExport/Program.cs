@@ -14,9 +14,10 @@ namespace DefExport
             if (!File.Exists(args[0]))
                 return -1;
 
-            string toolPath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\bin\Hostx86\x64";
-            string dumpbinPath = Path.Combine(toolPath, "dumpbin.exe");
-            string libPath = Path.Combine(toolPath, "lib.exe");
+            int exitCode;
+            exitCode = StartProcess("where", "dumpbin");
+            if (exitCode != 0)
+                return -1;
 
             string dllPath = Path.GetFullPath(args[0]);
             string fname = Path.GetFileNameWithoutExtension(dllPath);
@@ -24,15 +25,8 @@ namespace DefExport
             string defPath = fname + ".def";
             string outputLib = fname + ".lib";
 
-            Process process = Process.Start(new ProcessStartInfo
-            {
-                FileName = dumpbinPath,
-                Arguments = $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllPath}\"",
-                UseShellExecute = false,
-                WindowStyle = ProcessWindowStyle.Hidden
-            });
-            process.WaitForExit();
-            if (process.ExitCode != 0)
+            exitCode = StartProcess("dumpbin", $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllPath}\"");
+            if (exitCode != 0)
                 return -1;
 
             string str;
@@ -134,19 +128,32 @@ namespace DefExport
             streamWriter.Close();
             streamReader.Close();
 
-            Process process1 = Process.Start(new ProcessStartInfo
+            exitCode = StartProcess("lib", $"/NOLOGO /DEF:\"{defPath}\" /MACHINE:{arch} /OUT:\"{outputLib}\"", new ProcessStartInfo
             {
-                FileName = libPath,
-                Arguments = $"/NOLOGO /DEF:\"{defPath}\" /MACHINE:{arch} /OUT:\"{outputLib}\"",
                 UseShellExecute = false,
-                RedirectStandardError = true,
-                WindowStyle = ProcessWindowStyle.Hidden
+                RedirectStandardError = true
             });
-            process1.WaitForExit();
-            if (process1.ExitCode != 0)
+            if (exitCode != 0)
                 return -1;
 
             return 0;
+        }
+
+        static int StartProcess(string fileName, string arguments, ProcessStartInfo startInfo = null)
+        {
+            Process process = new Process();
+            if (startInfo == null)
+                startInfo = new ProcessStartInfo();
+
+            startInfo.FileName = fileName;
+            startInfo.Arguments = arguments;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
+
+            return process.ExitCode;
         }
     }
 
