@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -9,15 +10,24 @@ namespace DefExport
         static int Main(string[] args)
         {
             if (args.Length == 0)
+            {
+                Console.WriteLine("Use: DefExport.exe <dllfile>");
                 return -1;
+            }
 
             if (!File.Exists(args[0]))
+            {
+                Console.WriteLine($"File not exists: \"{args[0]}\"");
                 return -1;
+            }
 
             int exitCode;
             exitCode = StartProcess("where", "dumpbin");
             if (exitCode != 0)
+            {
+                Console.WriteLine("Not found dumpbin tool.");
                 return -1;
+            }
 
             string dllPath = Path.GetFullPath(args[0]);
             string fname = Path.GetFileNameWithoutExtension(dllPath);
@@ -136,6 +146,7 @@ namespace DefExport
             if (exitCode != 0)
                 return -1;
 
+            Console.WriteLine("OK");
             return 0;
         }
 
