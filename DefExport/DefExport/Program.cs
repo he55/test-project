@@ -29,13 +29,13 @@ namespace DefExport
                 return -1;
             }
 
-            string dllPath = Path.GetFullPath(args[0]);
-            string fname = Path.GetFileNameWithoutExtension(dllPath);
-            string tmpFilePath = Path.GetFullPath($"{fname}.tmp.txt");
-            string defPath = Path.GetFullPath($"{fname}.def");
-            string outputLib = Path.GetFullPath($"{fname}.lib");
+            string dllFilePath = Path.GetFullPath(args[0]);
+            string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
+            string tmpFilePath = Path.GetFullPath($"{fileName}.tmp.txt");
+            string defFilePath = Path.GetFullPath($"{fileName}.def");
+            string outputFilePath = Path.GetFullPath($"{fileName}.lib");
 
-            exitCode = StartProcess("dumpbin", $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllPath}\"");
+            exitCode = StartProcess("dumpbin", $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
             if (exitCode != 0)
                 return -1;
 
@@ -112,7 +112,7 @@ namespace DefExport
             str = streamReader.ReadLine();
 
             List<Symbol> symbols = new List<Symbol>();
-            StreamWriter streamWriter = File.CreateText(defPath);
+            StreamWriter streamWriter = File.CreateText(defFilePath);
             streamWriter.WriteLine("EXPORTS");
 
             for (int i = 0; i < number; i++)
@@ -138,7 +138,7 @@ namespace DefExport
             streamWriter.Close();
             streamReader.Close();
 
-            exitCode = StartProcess("lib", $"/NOLOGO /DEF:\"{defPath}\" /MACHINE:{arch} /OUT:\"{outputLib}\"", new ProcessStartInfo
+            exitCode = StartProcess("lib", $"/NOLOGO /DEF:\"{defFilePath}\" /MACHINE:{arch} /OUT:\"{outputFilePath}\"", new ProcessStartInfo
             {
                 UseShellExecute = false,
                 RedirectStandardError = true
