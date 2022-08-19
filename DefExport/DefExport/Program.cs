@@ -9,9 +9,8 @@ namespace DefExport
     {
         static int Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                Console.WriteLine("Use: DefExport.exe <dllfile>");
+            if(args.Length<=2){
+                printHelp();
                 return -1;
             }
 
@@ -29,7 +28,15 @@ namespace DefExport
                 return -1;
             }
 
-            string dllFilePath = Path.GetFullPath(args[0]);
+            string dllFilePath = Path.GetFullPath(args[1]);
+            if(args[0]=="createLib"){
+                return createLib(dllFilePath);
+            }else if(args[0]=="copyDll"){
+                return copyDll(dllFilePath);
+            }
+
+            printHelp();
+            return -1;
         }
 
         static void printHelp(){
@@ -155,7 +162,7 @@ namespace DefExport
                 return 0;
         }
 
-        static int copyLib( string dllFilePath ){
+        static int copyDll( string dllFilePath ){
             return 0;
         }
 
