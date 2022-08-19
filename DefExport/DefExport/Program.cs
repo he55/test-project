@@ -9,15 +9,15 @@ namespace DefExport
     {
         static int Main(string[] args)
         {
-            if (args.Length <= 2)
+            if (args.Length < 2)
             {
                 PrintUsage();
                 return -1;
             }
 
-            if (!File.Exists(args[0]))
+            if (!File.Exists(args[1]))
             {
-                Console.WriteLine($"File not exists: \"{args[0]}\"");
+                Console.WriteLine($"File not exists: \"{args[1]}\"");
                 return -1;
             }
 
@@ -29,11 +29,11 @@ namespace DefExport
             }
 
             string dllFilePath = Path.GetFullPath(args[1]);
-            if (args[0] == "createLib")
+            if (args[0] == "-create")
             {
                 return createLib(dllFilePath);
             }
-            else if (args[0] == "copyDll")
+            else if (args[0] == "-copy")
             {
                 return copyDll(dllFilePath);
             }
