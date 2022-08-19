@@ -9,8 +9,9 @@ namespace DefExport
     {
         static int Main(string[] args)
         {
-            if(args.Length<=2){
-                printHelp();
+            if (args.Length <= 2)
+            {
+                PrintUsage();
                 return -1;
             }
 
@@ -20,8 +21,7 @@ namespace DefExport
                 return -1;
             }
 
-            int exitCode;
-            exitCode = StartProcess("where", "dumpbin");
+            int exitCode = StartProcess("where", "dumpbin");
             if (exitCode != 0)
             {
                 Console.WriteLine("Not found dumpbin tool.");
@@ -29,26 +29,43 @@ namespace DefExport
             }
 
             string dllFilePath = Path.GetFullPath(args[1]);
-            if(args[0]=="createLib"){
+            if (args[0] == "createLib")
+            {
                 return createLib(dllFilePath);
-            }else if(args[0]=="copyDll"){
+            }
+            else if (args[0] == "copyDll")
+            {
                 return copyDll(dllFilePath);
             }
 
-            printHelp();
+            PrintUsage();
             return -1;
         }
 
-        static void printHelp(){
+        static void PrintUsage()
+        {
+            string Usage = String.Join(Environment.NewLine,
+                "Dependencies.exe : command line tool for create an import library utilities.",
+                "",
+                "Usage : Dependencies.exe [OPTIONS] <FILE>",
+                "",
+                "Options :",
+                "  -h -help : display this help",
+                "  -create : create an import library",
+                "  -copy : copy dependency"
+            );
+
+            Console.WriteLine(Usage);
         }
 
-        static int createLib( string dllFilePath ){
+        static int createLib(string dllFilePath)
+        {
             string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
             string tmpFilePath = $"{fileName}.tmp.txt";
             string defFilePath = $"{fileName}.def";
             string outputFilePath = $"{fileName}.lib";
 
-            exitCode = StartProcess("dumpbin", $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
+            int exitCode = StartProcess("dumpbin", $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
             if (exitCode != 0)
                 return -1;
 
@@ -159,10 +176,11 @@ namespace DefExport
             if (exitCode != 0)
                 return -1;
 
-                return 0;
+            return 0;
         }
 
-        static int copyDll( string dllFilePath ){
+        static int copyDll(string dllFilePath)
+        {
             return 0;
         }
 
