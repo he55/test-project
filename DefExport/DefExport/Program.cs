@@ -30,6 +30,12 @@ namespace DefExport
             }
 
             string dllFilePath = Path.GetFullPath(args[0]);
+        }
+
+        static void printHelp(){
+        }
+
+        static int createLib( string dllFilePath ){
             string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
             string tmpFilePath = $"{fileName}.tmp.txt";
             string defFilePath = $"{fileName}.def";
@@ -146,7 +152,10 @@ namespace DefExport
             if (exitCode != 0)
                 return -1;
 
-            Console.WriteLine("OK");
+                return 0;
+        }
+
+        static int copyLib( string dllFilePath ){
             return 0;
         }
 
