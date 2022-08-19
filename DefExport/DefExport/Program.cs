@@ -31,9 +31,9 @@ namespace DefExport
 
             string dllFilePath = Path.GetFullPath(args[0]);
             string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
-            string tmpFilePath = Path.GetFullPath($"{fileName}.tmp.txt");
-            string defFilePath = Path.GetFullPath($"{fileName}.def");
-            string outputFilePath = Path.GetFullPath($"{fileName}.lib");
+            string tmpFilePath = $"{fileName}.tmp.txt";
+            string defFilePath = $"{fileName}.def";
+            string outputFilePath = $"{fileName}.lib";
 
             exitCode = StartProcess("dumpbin", $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
             if (exitCode != 0)
