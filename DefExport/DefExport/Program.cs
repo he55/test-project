@@ -179,10 +179,25 @@ namespace DefExport
             return 0;
         }
 
+        static HashSet<string> set = new HashSet<string>();
+
         static int copyDll(string dllFilePath)
+        {
+            findDll(dllFilePath);
+
+            set.Add(dllFilePath);
+            foreach (var item in set)
+            {
+                File.Copy(item, Path.GetFileName(item), true);
+            }
+            return 0;
+        }
+
+        static int findDll(string dllFilePath)
         {
             string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
             string tmpFilePath = $"{fileName}.tmp.txt";
+            string fpath = Path.GetDirectoryName(dllFilePath);
 
             int exitCode = StartProcess("dumpbin", $"/DEPENDENTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
             if (exitCode != 0)
@@ -197,6 +212,9 @@ namespace DefExport
                     return -1;
 
                 str = streamReader.ReadLine();
+                if (str == null)
+                    return -1;
+
                 idx1 = str.IndexOf("Image has the following dependencies:");
                 if (idx1 >= 0)
                     break;
@@ -216,17 +234,33 @@ namespace DefExport
 
             str = streamReader.ReadLine();
             idx1 = str.IndexOf("Image has the following delay load dependencies:");
-            if (idx1 == -1)
-                return -1;
-
-            str = streamReader.ReadLine();
-            while (true)
+            if (idx1 >= 0)
             {
                 str = streamReader.ReadLine();
-                if (str == "")
-                    break;
+                while (true)
+                {
+                    str = streamReader.ReadLine();
+                    if (str == "")
+                        break;
 
-                ps.Add(str.Trim());
+                    ps.Add(str.Trim());
+                }
+            }
+
+            streamReader.Close();
+
+            List<string> tmps = new List<string>();
+            foreach (var item in ps)
+            {
+                string fname = Path.Combine(fpath, item);
+                if (File.Exists(fname))
+                    tmps.Add(fname);
+            }
+
+            foreach (var item in tmps)
+            {
+                findDll(item);
+                set.Add(item);
             }
 
             return 0;
