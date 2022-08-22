@@ -181,6 +181,54 @@ namespace DefExport
 
         static int copyDll(string dllFilePath)
         {
+            string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
+            string tmpFilePath = $"{fileName}.tmp.txt";
+
+            int exitCode = StartProcess("dumpbin", $"/DEPENDENTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
+            if (exitCode != 0)
+                return -1;
+
+            string str;
+            int idx1;
+            StreamReader streamReader = File.OpenText(tmpFilePath);
+            for (int i = 0; i < 12; i++)
+            {
+                if (i == 11)
+                    return -1;
+
+                str = streamReader.ReadLine();
+                idx1 = str.IndexOf("Image has the following dependencies:");
+                if (idx1 >= 0)
+                    break;
+            }
+
+            List<string> ps = new List<string>();
+
+            str = streamReader.ReadLine();
+            while (true)
+            {
+                str = streamReader.ReadLine();
+                if (str == "")
+                    break;
+
+                ps.Add(str.Trim());
+            }
+
+            str = streamReader.ReadLine();
+            idx1 = str.IndexOf("Image has the following delay load dependencies:");
+            if (idx1 == -1)
+                return -1;
+
+            str = streamReader.ReadLine();
+            while (true)
+            {
+                str = streamReader.ReadLine();
+                if (str == "")
+                    break;
+
+                ps.Add(str.Trim());
+            }
+
             return 0;
         }
 
