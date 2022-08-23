@@ -189,6 +189,7 @@ namespace DefExport
             foreach (var item in set)
             {
                 string fname = Path.GetFileName(item);
+                Console.WriteLine($"Copying... {fname}");
                 File.Copy(item, fname, true);
             }
             return 0;
