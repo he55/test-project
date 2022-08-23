@@ -188,7 +188,8 @@ namespace DefExport
             set.Add(dllFilePath);
             foreach (var item in set)
             {
-                File.Copy(item, Path.GetFileName(item), true);
+                string fname = Path.GetFileName(item);
+                File.Copy(item, fname, true);
             }
             return 0;
         }
@@ -249,18 +250,14 @@ namespace DefExport
 
             streamReader.Close();
 
-            List<string> tmps = new List<string>();
             foreach (var item in ps)
             {
                 string fname = Path.Combine(fpath, item);
-                if (File.Exists(fname))
-                    tmps.Add(fname);
-            }
-
-            foreach (var item in tmps)
-            {
-                findDll(item);
-                set.Add(item);
+                if (!set.Contains(fname) && File.Exists(fname))
+                {
+                    set.Add(fname);
+                    findDll(fname);
+                }
             }
 
             return 0;
