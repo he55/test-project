@@ -65,7 +65,7 @@ namespace DefExport
             string defFilePath = $"{fileName}.def";
             string outputFilePath = $"{fileName}.lib";
 
-            int exitCode = StartProcess("dumpbin", $"/NOLOGO /HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
+            int exitCode = StartProcess("dumpbin", $"/HEADERS /EXPORTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
             if (exitCode != 0)
                 return -1;
 
@@ -112,9 +112,9 @@ namespace DefExport
             }
 
             int number = 0;
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 8; i++)
             {
-                if (i == 6)
+                if (i == 7)
                     return -1;
 
                 str = streamReader.ReadLine();
@@ -209,9 +209,9 @@ namespace DefExport
             string str;
             int idx;
             StreamReader streamReader = File.OpenText(tmpFilePath);
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 8; i++)
             {
-                if (i == 11)
+                if (i == 7)
                     return -1;
 
                 str = streamReader.ReadLine();
