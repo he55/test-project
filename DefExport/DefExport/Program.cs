@@ -31,11 +31,11 @@ namespace DefExport
             string dllFilePath = Path.GetFullPath(args[1]);
             if (args[0] == "-create")
             {
-                return createLib(dllFilePath);
+                return CreateLib(dllFilePath);
             }
             else if (args[0] == "-copy")
             {
-                return copyDll(dllFilePath);
+                return CopyDll(dllFilePath);
             }
 
             PrintUsage();
@@ -58,7 +58,7 @@ namespace DefExport
             Console.WriteLine(Usage);
         }
 
-        static int createLib(string dllFilePath)
+        static int CreateLib(string dllFilePath)
         {
             string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
             string tmpFilePath = $"{fileName}.tmp.txt";
@@ -70,6 +70,7 @@ namespace DefExport
                 return -1;
 
             string str;
+            int idx;
             string arch = null;
             StreamReader streamReader = File.OpenText(tmpFilePath);
             for (int i = 0; i < 8; i++)
@@ -78,23 +79,23 @@ namespace DefExport
                     return -1;
 
                 str = streamReader.ReadLine();
-                int idx1 = str.IndexOf("File Type: DLL");
-                if (idx1 >= 0)
+                idx = str.IndexOf("File Type: DLL");
+                if (idx >= 0)
                 {
                     str = streamReader.ReadLine();
                     str = streamReader.ReadLine();
-                    int idx2 = str.IndexOf("FILE HEADER VALUES");
-                    if (idx2 == -1)
+                    idx = str.IndexOf("FILE HEADER VALUES");
+                    if (idx == -1)
                         return -1;
 
                     str = streamReader.ReadLine();
-                    int idx3 = str.IndexOf("machine");
-                    if (idx3 == -1)
+                    idx = str.IndexOf("machine");
+                    if (idx == -1)
                         return -1;
 
-                    int idxStart = str.IndexOf("(") + 1;
+                    idx = str.IndexOf("(") + 1;
                     int idxEnd = str.IndexOf(")");
-                    arch = str.Substring(idxStart, idxEnd - idxStart);
+                    arch = str.Substring(idx, idxEnd - idx);
                     break;
                 }
             }
@@ -105,7 +106,7 @@ namespace DefExport
                 if (str == null)
                     return -1;
 
-                int idx = str.IndexOf("Section contains the following exports for");
+                idx = str.IndexOf("Section contains the following exports for");
                 if (idx >= 0)
                     break;
             }
@@ -117,7 +118,7 @@ namespace DefExport
                     return -1;
 
                 str = streamReader.ReadLine();
-                int idx = str.IndexOf("number of functions");
+                idx = str.IndexOf("number of functions");
                 if (idx >= 0)
                 {
                     string strNumber = str.Substring(0, idx);
@@ -179,14 +180,14 @@ namespace DefExport
             return 0;
         }
 
-        static HashSet<string> set = new HashSet<string>();
+        static HashSet<string> s_dlls = new HashSet<string>();
 
-        static int copyDll(string dllFilePath)
+        static int CopyDll(string dllFilePath)
         {
-            findDll(dllFilePath);
+            FindDll(dllFilePath);
 
-            set.Add(dllFilePath);
-            foreach (var item in set)
+            s_dlls.Add(dllFilePath);
+            foreach (var item in s_dlls)
             {
                 string fname = Path.GetFileName(item);
                 Console.WriteLine($"Copying... {fname}");
@@ -195,18 +196,18 @@ namespace DefExport
             return 0;
         }
 
-        static int findDll(string dllFilePath)
+        static int FindDll(string dllFilePath)
         {
             string fileName = Path.GetFileNameWithoutExtension(dllFilePath);
             string tmpFilePath = $"{fileName}.tmp.txt";
-            string fpath = Path.GetDirectoryName(dllFilePath);
+            string dir = Path.GetDirectoryName(dllFilePath);
 
             int exitCode = StartProcess("dumpbin", $"/DEPENDENTS /OUT:\"{tmpFilePath}\" \"{dllFilePath}\"");
             if (exitCode != 0)
                 return -1;
 
             string str;
-            int idx1;
+            int idx;
             StreamReader streamReader = File.OpenText(tmpFilePath);
             for (int i = 0; i < 12; i++)
             {
@@ -217,12 +218,12 @@ namespace DefExport
                 if (str == null)
                     return -1;
 
-                idx1 = str.IndexOf("Image has the following dependencies:");
-                if (idx1 >= 0)
+                idx = str.IndexOf("Image has the following dependencies:");
+                if (idx >= 0)
                     break;
             }
 
-            List<string> ps = new List<string>();
+            List<string> dlls = new List<string>();
 
             str = streamReader.ReadLine();
             while (true)
@@ -231,12 +232,12 @@ namespace DefExport
                 if (str == "")
                     break;
 
-                ps.Add(str.Trim());
+                dlls.Add(str.Trim());
             }
 
             str = streamReader.ReadLine();
-            idx1 = str.IndexOf("Image has the following delay load dependencies:");
-            if (idx1 >= 0)
+            idx = str.IndexOf("Image has the following delay load dependencies:");
+            if (idx >= 0)
             {
                 str = streamReader.ReadLine();
                 while (true)
@@ -245,19 +246,19 @@ namespace DefExport
                     if (str == "")
                         break;
 
-                    ps.Add(str.Trim());
+                    dlls.Add(str.Trim());
                 }
             }
 
             streamReader.Close();
 
-            foreach (var item in ps)
+            foreach (var item in dlls)
             {
-                string fname = Path.Combine(fpath, item);
-                if (!set.Contains(fname) && File.Exists(fname))
+                string fullPath = Path.Combine(dir, item);
+                if (!s_dlls.Contains(fullPath) && File.Exists(fullPath))
                 {
-                    set.Add(fname);
-                    findDll(fname);
+                    s_dlls.Add(fullPath);
+                    FindDll(fullPath);
                 }
             }
 
