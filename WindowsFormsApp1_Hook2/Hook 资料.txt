@@ -1,0 +1,2 @@
+C#实现Hook功能详解
+https://blog.csdn.net/u014659211/article/details/106383075
