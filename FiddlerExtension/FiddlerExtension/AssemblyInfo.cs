@@ -1,0 +1,1 @@
+[assembly:Fiddler.RequiredVersion("5.0.0.0")]

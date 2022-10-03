@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+	  <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Fiddler">
+      <HintPath>..\..\..\..\AppData\Local\Programs\Fiddler24\Fiddler.exe</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;%25userprofile%25\My Documents\Fiddler2\Scripts\$(TargetFilename)&quot;" />
+  </Target>
+
+</Project>
