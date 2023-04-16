@@ -1,6 +1,6 @@
-https://www.live2d.com/wp/wp-content/themes/cubism_wpml/css/styles-pc.css?er=44
+https://www.live2d.com/wp/wp-content/themes/cubism_wpml/css/styles-pc.css
 https://www.live2d.com/wp/wp-content/themes/cubism_wpml/js/lib/live2dcubismcore.min.js
-https://www.live2d.com/wp/wp-content/themes/cubism_wpml/js/lib/main.js?er=44
+https://www.live2d.com/wp/wp-content/themes/cubism_wpml/js/lib/main.js
 https://www.live2d.com/wp/wp-content/themes/cubism_wpml/img/index-about-bg.jpg
 https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/Hiyori.model3.json
 https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/Hiyori.moc3
@@ -16,4 +16,5 @@ https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/motions/Hiyori_m09
 https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/motions/Hiyori_m08.motion3.json
 https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/motions/Hiyori_m06.motion3.json
 https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/motions/Hiyori_m03.motion3.json
+https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/motions/Hiyori_m04.motion3.json
 https://www.live2d.com/wp/wp-content/themes/cubism/res/Hiyori/motions/Hiyori_m02.motion3.json
